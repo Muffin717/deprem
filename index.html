@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Deprem Bilgi Sitesi</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+  </head>
+  <style>
+    h1 {text-align: center;}
+    p {text-align: center;}
+    div {text-align: center;}
+
+    .sidebar {
+    background-color: #ffffff;
+    }
+  </style>
+  <body>
+    <h1>Deprem Güvenli Bölgeler Haritası</h1>
+    <iframe src="https://www.google.com/maps/d/u/1/embed?mid=1aQ0TJi4q_46XAZiSLggkbTjPzLGkTzQ" width="100%" height="500"></iframe>
+    
+    <br>
+
+    <h1>Deprem Olay Haritası</h1>
+    <iframe src="https://geofon.gfz-potsdam.de/eqexplorer/?startdate=now-14days&enddate=now&minmag=0.0&maxmag=10.0&minlon=-180.00&maxlon=180.00&minlat=-90.00&maxlat=90.00" width="100%" height="500"></iframe>
+
+    <div id="notification-box" style="font-size: 35px;"></div>
+
+    <br>
+
+    
+
+    <script>
+        const url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson';
+        const box = document.getElementById('notification-box');
+      
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            const earthquakes = data.features.filter(feature => feature.properties.place.includes('Turkey'));
+            if (earthquakes.length > 0) {
+              const mostRecent = earthquakes[0];
+              const magnitude = mostRecent.properties.mag;
+              const location = mostRecent.properties.place;
+              const time = new Date(mostRecent.properties.time);
+              box.innerHTML = `En yakın yaşanan deprem: \n Büyüklük - ${magnitude} \n Konum -  ${location} \n Zaman - ${time.toLocaleString()}`;
+            } else {
+              box.innerHTML = 'Yeni deprem saptanamadı.';
+            }
+          })
+          .catch(error => {
+            console.error(error);
+            box.innerHTML = 'Deprem bilgilerini kullanırken bir hata oluştu!';
+          });
+      </script>
+      
+  </body>
+</html>
